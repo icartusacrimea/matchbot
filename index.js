@@ -4,13 +4,16 @@ const bodyparser = require('body-parser');
 const app = express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 const request = require('request');
 const team = require('./models/teams');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
+
+/* Watson */
+const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
+const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
 
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
@@ -77,6 +80,35 @@ var personality_insights = new PersonalityInsightsV3({
   version_date: '2016-10-19'
 });
 
+var discovery = new DiscoveryV1({
+  username: process.env.DISCOVERY_USERNAME,
+  password: process.env.DISCOVERY_PASSWORD,
+  version_date: DiscoveryV1.VERSION_DATE_2016_12_15
+});
+
+personality_insights.profile({
+  text: cohen,
+  consumption_preferences: true
+  },
+  function (err, response) {
+    if (err)
+      console.log('error:', err);
+    else
+      console.log(JSON.stringify(response, null, 2));
+});
+
+// discovery.query({
+//     environment_id: '<environment_id>',
+//     collection_id: '<collection_id>',
+//     query:
+//   }, function(err, response) {
+//         if (err) {
+//           console.error(err);
+//         } else {
+//           console.log(JSON.stringify(response, null, 2));
+//         }
+//    });
+
 var cohen = `'Suzanne takes you down to her place near the river
 You can hear the boats go by, you can spend the night forever
 And you know that she's half-crazy but that's why you want to be there
@@ -106,13 +138,3 @@ While Suzanne holds her mirror
 And you want to travel with her, and you want to travel blind
 And you know that you can trust her
 For she's touched your perfect body with her mind'`
-personality_insights.profile({
-  text: cohen,
-  consumption_preferences: true
-  },
-  function (err, response) {
-    if (err)
-      console.log('error:', err);
-    else
-      console.log(JSON.stringify(response, null, 2));
-});
