@@ -1,4 +1,4 @@
-'use strict';
+
 const express = require('express');
 const bodyparser = require('body-parser');
 const app = express();
@@ -7,6 +7,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 const request = require('request');
 const team = require('./models/teams');
 const mongoose = require('mongoose');
+// app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
 var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
@@ -14,6 +15,26 @@ mongoose.connect(URL);
 /* Watson */
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
+
+var watson = require('watson-developer-cloud');
+var fs = require('fs');
+
+var file = fs.readFileSync('bob.html');
+console.log(file);
+// var file = '<h1>bob loblaw</h1>';
+
+var discovery = new DiscoveryV1({
+  username: process.env.DISCOVERY_USERNAME,
+  password: process.env.DISCOVERY_PASSWORD,
+  version_date: DiscoveryV1.VERSION_DATE_2016_12_15
+});
+
+discovery.addDocument({environment_id: '616dbd79-b1cd-401e-954a-1879ac3ab4a7', collection_id: 'e78d49ad-b8e8-4ee8-888f-9f2faafa8de1',file:  file},
+function(error, data) {
+  console.log(error);
+  console.log(data);
+  // console.log(JSON.stringify(data, null, 2));
+});
 
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
@@ -80,34 +101,7 @@ var personality_insights = new PersonalityInsightsV3({
   version_date: '2016-10-19'
 });
 
-var discovery = new DiscoveryV1({
-  username: process.env.DISCOVERY_USERNAME,
-  password: process.env.DISCOVERY_PASSWORD,
-  version_date: DiscoveryV1.VERSION_DATE_2016_12_15
-});
 
-personality_insights.profile({
-  text: cohen,
-  consumption_preferences: true
-  },
-  function (err, response) {
-    if (err)
-      console.log('error:', err);
-    else
-      console.log(JSON.stringify(response, null, 2));
-});
-
-// discovery.query({
-//     environment_id: '<environment_id>',
-//     collection_id: '<collection_id>',
-//     query:
-//   }, function(err, response) {
-//         if (err) {
-//           console.error(err);
-//         } else {
-//           console.log(JSON.stringify(response, null, 2));
-//         }
-//    });
 
 var cohen = `'Suzanne takes you down to her place near the river
 You can hear the boats go by, you can spend the night forever
@@ -138,3 +132,27 @@ While Suzanne holds her mirror
 And you want to travel with her, and you want to travel blind
 And you know that you can trust her
 For she's touched your perfect body with her mind'`
+
+// personality_insights.profile({
+//   text: cohen,
+//   consumption_preferences: true
+//   },
+//   function (err, response) {
+//     if (err)
+//       console.log('error:', err);
+//     else
+//       console.log(JSON.stringify(response, null, 2));
+// });
+
+// discovery.query({
+//     environment_id: '4a322b12-df72-4977-b297-2be0c39d24cd',
+//     collection_id: '<collection_id>',
+//     query:
+//   }, function(err, response) {
+//         if (err) {
+//           console.error(err);
+//         } else {
+//           console.log(JSON.stringify(response, null, 2));
+//         }
+//    });
+
