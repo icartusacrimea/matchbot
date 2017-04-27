@@ -12,29 +12,52 @@ mongoose.Promise = global.Promise;
 var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
 
+//BUILD HTML DOCUMENT
+function buildHtml(data){
+  return '<!DOCTYPE html>'
+       + '<html><p>Traci is awesome :DDDD :D :P :D</p></html>';
+}
+var fs = require('fs');
+
+
 /* Watson */
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
 
+function makeandsend(){
+  var fileName = 'bobno3.html';
+  var stream = fs.createWriteStream(fileName);
+
+  stream.once('open', function(fd) {
+    var html = buildHtml();
+    stream.end(html);
+    var file = fs.readFileSync('bobno3.html');
+    sendfile(file);
+  });
+
+  
+  // console.log(file);
+  // var file = '<h1>bob loblaw</h1>';
+  
+}
+makeandsend();
+
 var watson = require('watson-developer-cloud');
-var fs = require('fs');
 
-var file = fs.readFileSync('bob.html');
-console.log(file);
-// var file = '<h1>bob loblaw</h1>';
+function sendfile(htmlfile){
+  var discovery = new DiscoveryV1({
+    username: process.env.DISCOVERY_USERNAME,
+    password: process.env.DISCOVERY_PASSWORD,
+    version_date: DiscoveryV1.VERSION_DATE_2016_12_15
+  });
+  discovery.addDocument({environment_id: '616dbd79-b1cd-401e-954a-1879ac3ab4a7', collection_id: 'e78d49ad-b8e8-4ee8-888f-9f2faafa8de1',file: htmlfile},
+  function(error, data) {
+    console.log(error);
+    console.log(data);
+    // console.log(JSON.stringify(data, null, 2));
+  });
+}
 
-var discovery = new DiscoveryV1({
-  username: process.env.DISCOVERY_USERNAME,
-  password: process.env.DISCOVERY_PASSWORD,
-  version_date: DiscoveryV1.VERSION_DATE_2016_12_15
-});
-
-discovery.addDocument({environment_id: '616dbd79-b1cd-401e-954a-1879ac3ab4a7', collection_id: 'e78d49ad-b8e8-4ee8-888f-9f2faafa8de1',file:  file},
-function(error, data) {
-  console.log(error);
-  console.log(data);
-  // console.log(JSON.stringify(data, null, 2));
-});
 
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
