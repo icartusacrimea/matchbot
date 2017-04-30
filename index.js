@@ -57,7 +57,6 @@ function sendfile(htmlfile){
   });
 }
 
-
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
 app.get('/auth', (req, res) => {
