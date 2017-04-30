@@ -1,27 +1,25 @@
-const express = require('express');
-const bodyparser = require('body-parser');
-const app = express();
+var express = require('express');
+var bodyparser = require('body-parser');
+var app = express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-const request = require('request');
-const team = require('./models/teams');
-const mongoose = require('mongoose');
+var request = require('request');
+var team = require('./models/teams');
+var mongoose = require('mongoose');
 // app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
 var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
 
+/* Watson */
+var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
+var DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
+
 //BUILD HTML DOCUMENT
 function buildHtml(data){
   return '<!DOCTYPE html>'
-       + '<html><p>Traci is awesome :DDDD :D :P :D</p></html>';
+       + '<html><p>Peri is awesome :DDDD :D :P :D</p></html>';
 }
-var fs = require('fs');
-
-
-/* Watson */
-const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
-const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
 
 function makeandsend(){
   var fileName = 'bobno3.html';
