@@ -6,6 +6,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 const request = require('request');
 const team = require('./models/teams');
 const User = require('./models/user');
+const Traits = require('./models/traits');
 const mongoose = require('mongoose');
 // app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
@@ -41,7 +42,7 @@ function makeandsend(text){
 }
 // makeandsend();
 
-var watson = require('watson-developer-cloud');
+/*var watson = require('watson-developer-cloud');
 
 function sendfile(htmlfile){
   var discovery = new DiscoveryV1({
@@ -55,7 +56,7 @@ function sendfile(htmlfile){
     console.log(data);
     // console.log(JSON.stringify(data, null, 2));
   });
-}
+}*/
 
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
@@ -68,7 +69,7 @@ app.get('/auth', (req, res) => {
   request.post('https://slack.com/api/oauth.access', data, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = JSON.parse(body).access_token;
-        console.log(token);
+        //console.log(token);
         request.post('https://slack.com/api/team.info', {form : {token : token}}, function(error, response, body) {
           console.log(JSON.parse(body));
           if (!error && response.statusCode == 200) {
@@ -140,19 +141,20 @@ function getinsights(message, res, user){
           finalpersonality[personality[i].name] = personality[i].percentile;
         }
         user.personality = finalpersonality;
-        console.log(user);
+        createLists(user);
+        //console.log(user);
         User.find({teamid: user.teamid, userid: user.userid}).exec()
         .then(function(founduser) {
-          console.log("This is the founduser" + founduser[0]);
+          //console.log("This is the founduser" + founduser[0]);
           if (founduser.length > 0) {
             User.findByIdAndUpdate(founduser[0]._id, {personality: finalpersonality}, {new: true}).exec()
             .then(function(updateduser) {
-              console.log("This is the updated user" + updateduser);
+              //console.log("This is the updated user" + updateduser);
               res.json({text: 'I figured you out!'});
             })
           } else {
             User.create(user, function(error, createduser) {
-              console.log("This is the createduser" + createduser);
+              //console.log("This is the createduser" + createduser);
               res.send('User created!!');
             })
           }
@@ -160,6 +162,45 @@ function getinsights(message, res, user){
       }
   });
 }
+
+function createLists(user) {
+  Traits.find({teamid: user.teamid}).exec()
+    .then(function(foundteam) {
+      console.log("this is the found team for createlists: " + foundteam);
+      console.log(user);
+      if (foundteam.length > 0) {
+        console.log("im in the if statement now");
+        var pushed = { 
+          Openness: {trait: user.personality.Openness, username: user.username}, 
+          Conscientiousness: {trait: user.personality.Conscientiousness, username: user.username}, 
+          Extraversion: {trait: user.personality.Extraversion, username: user.username},
+          Agreeableness: {trait: user.personality.Agreeableness, username: user.username}, 
+          'Emotional range': {trait: user.personality['Emotional range'], username: user.username}
+        }
+        Traits.findByIdAndUpdate(foundteam[0]._id, {$push: pushed},{new: true}).exec()
+      } else {
+        console.log("im in the else statement now" + user);
+        var traits = {};
+        traits.teamid = user.teamid;
+        traits.Openness = [{trait: user.personality.Openness, username: user.username}];
+        traits.Conscientiousness = [{trait: user.personality.Conscientiousness, username: user.username}];
+        traits.Extraversion = [{trait: user.personality.Extraversion, username: user.username}];
+        traits.Agreeableness = [{trait: user.personality.Agreeableness, username: user.username}];
+        traits['Emotional range'] = [{trait: user.personality['Emotional range'], username: user.username}];
+        Traits.create(traits, function(error, createdtraits) {
+          //res.send('Traits created!!');
+          console.log('traits created');
+        })
+      }
+
+    })
+}
+/*app.post('/match', (req, res) => {
+  //sort each traits array by percentage
+  //find user's closest match in each trait
+  //determine smallest difference
+  //send message informing user of their best match
+});*/
 
 var personality_insights = new PersonalityInsightsV3({
   username: process.env.PERSONALITY_USERNAME,
