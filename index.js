@@ -14,49 +14,21 @@ var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
 
 //BUILD HTML DOCUMENT
-function buildHtml(data){
+/*function buildHtml(data){
   return '<!DOCTYPE html>'
        + '<html><p>' + data + '</p></html>';
 }
-var fs = require('fs');
+var fs = require('fs');*/
 
 
-/* Watson */
+/* Watson IBM Personality-Insights */
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
-const DiscoveryV1 = require('watson-developer-cloud/discovery/v1');
 
-function makeandsend(text){
-  var fileName = 'bobno3.html';
-  var stream = fs.createWriteStream(fileName);
-
-  stream.once('open', function(fd) {
-    var html = text;
-    stream.end(html);
-    var file = fs.readFileSync('bobno3.html');
-    sendfile(file);
-  });
-
-  // console.log(file);
-  // var file = '<h1>bob loblaw</h1>';
-  
-}
-// makeandsend();
-
-/*var watson = require('watson-developer-cloud');
-
-function sendfile(htmlfile){
-  var discovery = new DiscoveryV1({
-    username: process.env.DISCOVERY_USERNAME,
-    password: process.env.DISCOVERY_PASSWORD,
-    version_date: DiscoveryV1.VERSION_DATE_2016_12_15
-  });
-  discovery.addDocument({environment_id: '616dbd79-b1cd-401e-954a-1879ac3ab4a7', collection_id: 'e78d49ad-b8e8-4ee8-888f-9f2faafa8de1',file: htmlfile},
-  function(error, data) {
-    console.log(error);
-    console.log(data);
-    // console.log(JSON.stringify(data, null, 2));
-  });
-}*/
+var personality_insights = new PersonalityInsightsV3({
+  username: process.env.PERSONALITY_USERNAME,
+  password: process.env.PERSONALITY_PASSWORD,
+  version_date: '2016-10-19'
+});
 
 const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
@@ -142,7 +114,6 @@ function getinsights(message, res, user){
         }
         user.personality = finalpersonality;
         createLists(user);
-        //console.log(user);
         User.find({teamid: user.teamid, userid: user.userid}).exec()
         .then(function(founduser) {
           //console.log("This is the founduser" + founduser[0]);
@@ -165,36 +136,142 @@ function getinsights(message, res, user){
 
 function createLists(user) {
   Traits.find({teamid: user.teamid}).exec()
-    .then(function(foundteam) {
-      console.log("this is the found team for createlists: " + foundteam);
-      console.log(user);
-      if (foundteam.length > 0) {
-        console.log("im in the if statement now");
-        var pushed = { 
-          Openness: {trait: user.personality.Openness, username: user.username}, 
-          Conscientiousness: {trait: user.personality.Conscientiousness, username: user.username}, 
-          Extraversion: {trait: user.personality.Extraversion, username: user.username},
-          Agreeableness: {trait: user.personality.Agreeableness, username: user.username}, 
-          'Emotional range': {trait: user.personality['Emotional range'], username: user.username}
-        }
-        Traits.findByIdAndUpdate(foundteam[0]._id, {$push: pushed},{new: true}).exec()
-      } else {
-        console.log("im in the else statement now" + user);
-        var traits = {};
-        traits.teamid = user.teamid;
-        traits.Openness = [{trait: user.personality.Openness, username: user.username}];
-        traits.Conscientiousness = [{trait: user.personality.Conscientiousness, username: user.username}];
-        traits.Extraversion = [{trait: user.personality.Extraversion, username: user.username}];
-        traits.Agreeableness = [{trait: user.personality.Agreeableness, username: user.username}];
-        traits['Emotional range'] = [{trait: user.personality['Emotional range'], username: user.username}];
-        Traits.create(traits, function(error, createdtraits) {
-          //res.send('Traits created!!');
-          console.log('traits created');
-        })
-      }
+  .then(function(traitsobj) {
 
-    })
+    //console.log("this is the traits object: " + traitsobj);
+    if (traitsobj.length > 0) {
+      console.log("this team exists");
+      var isinthere = false,
+        pushed = {
+          Openness: {
+            trait: user.personality.Openness,
+            username: user.username
+          },
+          Conscientiousness: {
+            trait: user.personality.Conscientiousness,
+            username: user.username
+          },
+          Extraversion: {
+            trait: user.personality.Extraversion,
+            username: user.username
+          },
+          Agreeableness: {
+            trait: user.personality.Agreeableness,
+            username: user.username
+          },
+          'Emotional range': {
+            trait: user.personality['Emotional range'],
+            username: user.username
+          }
+        };
+        
+      var openarr = traitsobj[0].Openness,
+        conscarr = traitsobj[0].Conscientiousness,
+        extraarr = traitsobj[0].Extraversion,
+        agreearr = traitsobj[0].Agreeableness,
+        emotarr = traitsobj[0]['Emotional range'];
+
+      var filteredopenness = openarr.filter(function(objs) {
+        if (objs.username === user.username) {
+          isinthere = true;
+        }
+      });
+      if (isinthere) {
+        console.log("user is already in there. removing user from arrs, then pushing new userinfo !!!e*(Y**&");
+        var removeByAttr = function(arr, attr, value) {
+          var i = arr.length;
+          while (i--) {
+            if (arr[i] && arr[i].hasOwnProperty(attr) && (arguments.length > 2 && arr[i][attr] === value)) {
+              arr.splice(i, 1);
+            }
+          }
+          return arr;
+        }
+        var filteredObj = {
+            teamid: user.teamid,
+            Openness: removeByAttr(openarr, 'username', user.username),
+            Conscientiousness: removeByAttr(conscarr, 'username', user.username),
+            Extraversion: removeByAttr(extraarr, 'username', user.username),
+            Agreeableness: removeByAttr(agreearr, 'username', user.username),
+            'Emotional range': removeByAttr(emotarr, 'username', user.username)
+          }
+        Traits.findByIdAndUpdate(traitsobj[0]._id, filteredObj).exec()
+        Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed},{new: true}).exec()
+      } else {
+        console.log("user isnt in there, but team does exist. pushing user objs to each arr ,omg!!");
+        Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed}, {new: true}).exec()
+      }
+      //team does not yet exist
+    } else {
+      console.log("this team didnt exist");
+      var traits = {};
+      traits.teamid = user.teamid;
+      traits.Openness = [{
+        trait: user.personality.Openness,
+        username: user.username
+      }];
+      traits.Conscientiousness = [{
+        trait: user.personality.Conscientiousness,
+        username: user.username
+      }];
+      traits.Extraversion = [{
+        trait: user.personality.Extraversion,
+        username: user.username
+      }];
+      traits.Agreeableness = [{
+        trait: user.personality.Agreeableness,
+        username: user.username
+      }];
+      traits['Emotional range'] = [{
+        trait: user.personality['Emotional range'],
+        username: user.username
+      }];
+      Traits.create(traits, function(error, createdtraits) {
+        //res.send('Traits created!!');
+        console.log('traits created');
+      })
+    }
+  })
 }
+
+function sortTraits() {
+  Traits.find({teamid: traits.teamid}).exec()
+  .then(function(traitsobj) {
+
+    function sortpushed(a,b) {
+      if (a.trait < b.trait) {
+        return -1;
+      }
+      if (a.trait > b.trait) {
+        return 1;
+      return 0;
+      }
+    }
+    var openarr = traitsobj[0].Openness,
+    conscarr = traitsobj[0].Conscientiousness,
+    extraarr = traitsobj[0].Extraversion,
+    agreearr = traitsobj[0].Agreeableness,
+    emotarr = traitsobj[0]['Emotional range'];
+
+    var sorted1 = openarr.sort(sortpushed);
+    var sorted2 = conscarr.sort(sortpushed);
+    var sorted3 = extraarr.sort(sortpushed);
+    var sorted4 = agreearr.sort(sortpushed);
+    var sorted5 = emotarr.sort(sortpushed);
+
+    var pushed2 = {
+      teamid: user.teamid,
+      Openness: sorted1,
+      Conscientiousness: sorted2,
+      Extraversion: sorted3,
+      Agreeableness: sorted4,
+      'Emotional range': sorted5
+    };
+
+    Traits.findByIdAndUpdate(traitsobj[0]._id, pushed2).exec()
+  })
+}
+
 /*app.post('/match', (req, res) => {
   //sort each traits array by percentage
   //find user's closest match in each trait
@@ -202,20 +279,3 @@ function createLists(user) {
   //send message informing user of their best match
 });*/
 
-var personality_insights = new PersonalityInsightsV3({
-  username: process.env.PERSONALITY_USERNAME,
-  password: process.env.PERSONALITY_PASSWORD,
-  version_date: '2016-10-19'
-});
-
-// discovery.query({
-//     environment_id: '4a322b12-df72-4977-b297-2be0c39d24cd',
-//     collection_id: '<collection_id>',
-//     query:
-//   }, function(err, response) {
-//         if (err) {
-//           console.error(err);
-//         } else {
-//           console.log(JSON.stringify(response, null, 2));
-//         }
-//    });
