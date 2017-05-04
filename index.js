@@ -13,14 +13,6 @@ mongoose.Promise = global.Promise;
 var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
 
-//BUILD HTML DOCUMENT
-/*function buildHtml(data){
-  return '<!DOCTYPE html>'
-       + '<html><p>' + data + '</p></html>';
-}
-var fs = require('fs');*/
-
-
 /* Watson IBM Personality-Insights */
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 
@@ -63,10 +55,7 @@ app.get('/auth', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  //let text = req.body.text;
-
   var channelid = req.body.channel_id;
-
   team.find({id : req.body.team_id}, function(error, foundteam) {
     // console.log(foundteam);
     var token = foundteam[0].token;
@@ -82,8 +71,6 @@ app.post('/', (req, res) => {
         }).join(" ");
         var regex = /<.*?>/g;
         var final = filtered.replace(regex, "");
-        // var filetext = buildHtml(final);
-        // makeandsend(filetext);
         var user = {};
         user.username = req.body.user_name;
         user.userid = req.body.user_id;
@@ -102,7 +89,7 @@ function getinsights(message, res, user){
     function (err, response) {
       if (err){
         console.log('error:', err);
-        res.send("error happened");
+        res.send("An error has occurred.");
       } else {
         // console.log(JSON.stringify(response, null, 2));
         var personality = response.personality.map(function(el){
@@ -121,12 +108,12 @@ function getinsights(message, res, user){
             User.findByIdAndUpdate(founduser[0]._id, {personality: finalpersonality}, {new: true}).exec()
             .then(function(updateduser) {
               //console.log("This is the updated user" + updateduser);
-              res.json({text: 'I figured you out!'});
+              res.json({text: 'Your personality traits have been analyzed and the info was added to the database.'});
             })
           } else {
             User.create(user, function(error, createduser) {
               //console.log("This is the createduser" + createduser);
-              res.send('User created!!');
+              res.send('You were added to the database!');
             })
           }
         })
@@ -137,8 +124,6 @@ function getinsights(message, res, user){
 function createLists(user) {
   Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
-
-    //console.log("this is the traits object: " + traitsobj);
     if (traitsobj.length > 0) {
       console.log("this team exists");
       var isinthere = false,
@@ -164,7 +149,7 @@ function createLists(user) {
             username: user.username
           }
         };
-        
+              
       var openarr = traitsobj[0].Openness,
         conscarr = traitsobj[0].Conscientiousness,
         extraarr = traitsobj[0].Extraversion,
@@ -201,6 +186,8 @@ function createLists(user) {
         console.log("user isnt in there, but team does exist. pushing user objs to each arr ,omg!!");
         Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed}, {new: true}).exec()
       }
+      //sort all traits
+      sortTraits(user);
       //team does not yet exist
     } else {
       console.log("this team didnt exist");
@@ -234,10 +221,10 @@ function createLists(user) {
   })
 }
 
-function sortTraits() {
-  Traits.find({teamid: traits.teamid}).exec()
+function sortTraits(user) {
+  Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
-
+    console.log("inside sortTraits");
     function sortpushed(a,b) {
       if (a.trait < b.trait) {
         return -1;
@@ -267,7 +254,6 @@ function sortTraits() {
       Agreeableness: sorted4,
       'Emotional range': sorted5
     };
-
     Traits.findByIdAndUpdate(traitsobj[0]._id, pushed2).exec()
   })
 }
