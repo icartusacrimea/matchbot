@@ -41,7 +41,7 @@ app.get('/auth', (req, res) => {
             var teamname = JSON.parse(body).team.name;
             team.find({name : teamname, id : teamid}, function(error, foundteam) {
               if (foundteam.length > 0 && foundteam) {
-                return res.send('Another already added the bot.');
+                return res.send('Someone else already added the bot.');
               }
               team.create({'name' : teamname, id : teamid, token : token}, function(error, newteam) {
                 res.send('The bot is now in your team.');
@@ -79,6 +79,101 @@ app.post('/', (req, res) => {
       }
     })
   });
+});
+
+app.post('/match', (req, res) => {
+  Traits.find({teamid: req.body.team_id}).exec()
+  .then(function(traitsobj) {
+    var username = req.body.user_name,
+    match, current, difference, fullobj;
+    var openarr = traitsobj[0].Openness,
+    conscarr = traitsobj[0].Conscientiousness,
+    extraarr = traitsobj[0].Extraversion,
+    agreearr = traitsobj[0].Agreeableness,
+    emotarr = traitsobj[0]['Emotional range'];
+
+    function isolate(arr) {
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i]['username'] === username) {
+          //this is current user's trait %
+          var num = arr[i]['trait'];
+          //this is rest of that trait's array after user removed
+          arr.splice(i, 1);
+          closestMatch(num, arr);
+        }
+      }
+    }
+    function closestMatch(num, arr) {
+      current = arr[0]['trait'];
+      difference = Math.abs (num - current);
+      for (var i = 0; i < arr.length; i++) {
+        var newdifference = Math.abs (num - arr[i]['trait']);
+        if (newdifference < difference) {
+          difference = newdifference;
+          current = arr[i]['trait'];
+        }
+      }
+        console.log("difference" + difference);
+      //get obj of user with smallest diff
+    }
+
+    function fullobj(arr, current){
+      var returned = arr.filter(function(obj) {
+          return obj.trait === current;
+        });
+      match = returned[0]['username'];
+      }
+    //calling isolate funct for each traits arr and
+    //associating user with smallest diff for each trait
+    isolate(openarr);
+    var opendiff = difference;
+    var user1 = current;
+    fullobj(openarr, user1);
+
+    isolate(conscarr);
+    var conscdiff = difference;
+    var user2 = current;
+    fullobj(conscarr, user2);
+
+    isolate(extraarr);
+    var extradiff = difference;
+    var user3 = current;
+    fullobj(extraarr, user3);
+
+    isolate(agreearr);
+    var agreediff = difference;
+    var user4 = current;
+    fullobj(agreearr, user4);
+
+    isolate(emotarr);
+    var emotdiff = difference;
+    var user5 = current;
+    fullobj(emotarr, user5);
+
+    var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff);
+    if (opendiff === smallestdiff) {
+      console.log("open");
+      //match = user1;
+    } else if (conscdiff === smallestdiff) {
+      console.log("consc");
+      //match = user2;
+    } else if (extradiff === smallestdiff) {
+      console.log("extra");
+      //match = user3;
+    } else if (agreediff === smallestdiff) {
+      console.log("agree");
+      //match = user4;
+    } else if (emotdiff === smallestdiff) {
+      console.log("emot");
+      //match = user5;
+    }
+
+  res.send("Your best match is @" + match + "!");
+  });
+
+  //find user's closest match in each trait
+  //determine smallest difference
+  //send message informing user of their best match
 });
 
 function getinsights(message, res, user){
@@ -124,6 +219,7 @@ function getinsights(message, res, user){
 function createLists(user) {
   Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
+    console.log("this is traitsobj in createlists: " + traitsobj);
     if (traitsobj.length > 0) {
       console.log("this team exists");
       var isinthere = false,
@@ -149,12 +245,12 @@ function createLists(user) {
             username: user.username
           }
         };
-              
+
       var openarr = traitsobj[0].Openness,
-        conscarr = traitsobj[0].Conscientiousness,
-        extraarr = traitsobj[0].Extraversion,
-        agreearr = traitsobj[0].Agreeableness,
-        emotarr = traitsobj[0]['Emotional range'];
+      conscarr = traitsobj[0].Conscientiousness,
+      extraarr = traitsobj[0].Extraversion,
+      agreearr = traitsobj[0].Agreeableness,
+      emotarr = traitsobj[0]['Emotional range'];
 
       var filteredopenness = openarr.filter(function(objs) {
         if (objs.username === user.username) {
@@ -162,35 +258,34 @@ function createLists(user) {
         }
       });
       if (isinthere) {
-        console.log("user is already in there. removing user from arrs, then pushing new userinfo !!!e*(Y**&");
-        var removeByAttr = function(arr, attr, value) {
+        console.log("user is already in there. removing from and then re-adding user to arrs !!!e*(Y**&");
+        var removeRepeatUser = function(arr, prop, value) {
           var i = arr.length;
           while (i--) {
-            if (arr[i] && arr[i].hasOwnProperty(attr) && (arguments.length > 2 && arr[i][attr] === value)) {
+            if (arr[i] && arr[i].hasOwnProperty(prop) && (arguments.length > 2 && arr[i][prop] === value)) {
               arr.splice(i, 1);
             }
           }
           return arr;
         }
         var filteredObj = {
-            teamid: user.teamid,
-            Openness: removeByAttr(openarr, 'username', user.username),
-            Conscientiousness: removeByAttr(conscarr, 'username', user.username),
-            Extraversion: removeByAttr(extraarr, 'username', user.username),
-            Agreeableness: removeByAttr(agreearr, 'username', user.username),
-            'Emotional range': removeByAttr(emotarr, 'username', user.username)
-          }
+          teamid: user.teamid,
+          Openness: removeRepeatUser(openarr, 'username', user.username),
+          Conscientiousness: removeRepeatUser(conscarr, 'username', user.username),
+          Extraversion: removeRepeatUser(extraarr, 'username', user.username),
+          Agreeableness: removeRepeatUser(agreearr, 'username', user.username),
+          'Emotional range': removeRepeatUser(emotarr, 'username', user.username)
+        }
         Traits.findByIdAndUpdate(traitsobj[0]._id, filteredObj).exec()
         Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed},{new: true}).exec()
       } else {
-        console.log("user isnt in there, but team does exist. pushing user objs to each arr ,omg!!");
+        console.log("user isnt in arrs, but team does exist. pushing user to each arr ,omg!!");
         Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed}, {new: true}).exec()
       }
       //sort all traits
-      sortTraits(user);
-      //team does not yet exist
+      //sortTraits(user);
     } else {
-      console.log("this team didnt exist");
+      console.log("this team didnt exist, but it will now !*!&*!&!*");
       var traits = {};
       traits.teamid = user.teamid;
       traits.Openness = [{
@@ -220,7 +315,7 @@ function createLists(user) {
     }
   })
 }
-
+//dont need to be sorted
 function sortTraits(user) {
   Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
@@ -234,6 +329,7 @@ function sortTraits(user) {
       return 0;
       }
     }
+    //arrays for each trait
     var openarr = traitsobj[0].Openness,
     conscarr = traitsobj[0].Conscientiousness,
     extraarr = traitsobj[0].Extraversion,
@@ -246,7 +342,7 @@ function sortTraits(user) {
     var sorted4 = agreearr.sort(sortpushed);
     var sorted5 = emotarr.sort(sortpushed);
 
-    var pushed2 = {
+    var sortedarrs = {
       teamid: user.teamid,
       Openness: sorted1,
       Conscientiousness: sorted2,
@@ -254,14 +350,8 @@ function sortTraits(user) {
       Agreeableness: sorted4,
       'Emotional range': sorted5
     };
-    Traits.findByIdAndUpdate(traitsobj[0]._id, pushed2).exec()
+    Traits.findByIdAndUpdate(traitsobj[0]._id, sortedarrs).exec()
   })
 }
 
-/*app.post('/match', (req, res) => {
-  //sort each traits array by percentage
-  //find user's closest match in each trait
-  //determine smallest difference
-  //send message informing user of their best match
-});*/
 
