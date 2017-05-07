@@ -1,3 +1,5 @@
-# analyzemebot
+# MatchBot
 
-utilizes IBM Watson technologies personality-insights and discovery to, in bot form via conversation, collect data from Slack users to create personality profiles and offer compatibility matches for Chingu cohort collaboration.
+What does it do?
+------------
+utilizes IBM Watson personality-insights to collect data from your messages within a Slack team to create a personality profiles and offer best compatibility matches for team collaboration
