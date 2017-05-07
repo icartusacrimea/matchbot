@@ -99,11 +99,11 @@ app.post('/match', (req, res) => {
           var num = arr[i]['trait'];
           //this is rest of that trait's array after user removed
           arr.splice(i, 1);
-          closestMatch(num, arr);
+          smallestDifference(num, arr);
         }
       }
     }
-    function closestMatch(num, arr) {
+    function smallestDifference(num, arr) {
       current = arr[0]['trait'];
       difference = Math.abs (num - current);
       for (var i = 0; i < arr.length; i++) {
@@ -113,67 +113,63 @@ app.post('/match', (req, res) => {
           current = arr[i]['trait'];
         }
       }
-        console.log("difference" + difference);
-      //get obj of user with smallest diff
+      console.log("current: " + current);
+      return current;
     }
-
+    //get obj of user with smallest diff
     function fullobj(arr, current){
       var returned = arr.filter(function(obj) {
           return obj.trait === current;
         });
       match = returned[0]['username'];
-      }
-    //calling isolate funct for each traits arr and
-    //associating user with smallest diff for each trait
+    }
+    /* calling isolate/smallestDifference functs for each traits arr and
+    creating var for each current user with smallest diff from each traits array 
+    in prep for determining overall smallest diff and associated user */
     isolate(openarr);
     var opendiff = difference;
     var user1 = current;
-    fullobj(openarr, user1);
 
     isolate(conscarr);
     var conscdiff = difference;
     var user2 = current;
-    fullobj(conscarr, user2);
 
     isolate(extraarr);
     var extradiff = difference;
     var user3 = current;
-    fullobj(extraarr, user3);
 
     isolate(agreearr);
     var agreediff = difference;
     var user4 = current;
-    fullobj(agreearr, user4);
 
     isolate(emotarr);
     var emotdiff = difference;
     var user5 = current;
     fullobj(emotarr, user5);
 
+    console.log("here are ALL of the diffs: " + opendiff, conscdiff, extradiff, agreediff, emotdiff);
+
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff);
     if (opendiff === smallestdiff) {
       console.log("open");
-      //match = user1;
+      fullobj(openarr, user1);
     } else if (conscdiff === smallestdiff) {
       console.log("consc");
-      //match = user2;
+      fullobj(conscarr, user2);
     } else if (extradiff === smallestdiff) {
       console.log("extra");
-      //match = user3;
+      fullobj(extraarr, user3);
     } else if (agreediff === smallestdiff) {
       console.log("agree");
-      //match = user4;
+      fullobj(agreearr, user4);
     } else if (emotdiff === smallestdiff) {
       console.log("emot");
-      //match = user5;
+      fullobj(emotarr, user5);
     }
 
   res.send("Your best match is @" + match + "!");
   });
 
-  //find user's closest match in each trait
-  //determine smallest difference
-  //send message informing user of their best match
 });
 
 function getinsights(message, res, user){
@@ -184,7 +180,7 @@ function getinsights(message, res, user){
     function (err, response) {
       if (err){
         console.log('error:', err);
-        res.send("An error has occurred.");
+        res.send("You haven't submitted enough messages to this channel for analysis. Minimum requirement is 100 words. You're almost there; try being more communicative today?");
       } else {
         // console.log(JSON.stringify(response, null, 2));
         var personality = response.personality.map(function(el){
@@ -219,7 +215,6 @@ function getinsights(message, res, user){
 function createLists(user) {
   Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
-    console.log("this is traitsobj in createlists: " + traitsobj);
     if (traitsobj.length > 0) {
       console.log("this team exists");
       var isinthere = false,
@@ -282,8 +277,6 @@ function createLists(user) {
         console.log("user isnt in arrs, but team does exist. pushing user to each arr ,omg!!");
         Traits.findByIdAndUpdate(traitsobj[0]._id, {$push: pushed}, {new: true}).exec()
       }
-      //sort all traits
-      //sortTraits(user);
     } else {
       console.log("this team didnt exist, but it will now !*!&*!&!*");
       var traits = {};
@@ -315,8 +308,8 @@ function createLists(user) {
     }
   })
 }
-//dont need to be sorted
-function sortTraits(user) {
+//NO LONGER NEED THIS FUNCTION
+/*function sortTraits(user) {
   Traits.find({teamid: user.teamid}).exec()
   .then(function(traitsobj) {
     console.log("inside sortTraits");
@@ -352,6 +345,6 @@ function sortTraits(user) {
     };
     Traits.findByIdAndUpdate(traitsobj[0]._id, sortedarrs).exec()
   })
-}
+}*/
 
 
