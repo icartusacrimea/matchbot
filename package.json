@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/icartusacrimea/analyzemebot.git"
+    "url": "git+ssh://git@github.com/icartusacrimea/matchbot.git"
   },
   "author": "icartusacrimea, periman",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/icartusacrimea/analyzemebot/issues"
+    "url": "https://github.com/icartusacrimea/matchbot/issues"
   },
-  "homepage": "https://github.com/icartusacrimea/analyzemebot#readme",
+  "homepage": "https://github.com/icartusacrimea/matchbot#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
     "crossfilter": "^1.3.12",
