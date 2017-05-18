@@ -174,7 +174,7 @@ app.post('/match', (req, res) => {
 
   res.json({
             "response_type": "in_channel",
-            "text": "username + ": Your best match is @" + match + "!"
+            "text": "username + ': Your best match is @' + match + '!'"
           });
   });
 
