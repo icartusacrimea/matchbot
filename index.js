@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const app = express();
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
 const request = require('request');
 const team = require('./models/teams');
 const User = require('./models/user');
@@ -10,8 +8,13 @@ const Traits = require('./models/traits');
 const mongoose = require('mongoose');
 // app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
-var URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
+const URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
 
 /* Watson IBM Personality-Insights */
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
@@ -52,6 +55,11 @@ app.get('/auth', (req, res) => {
         });
       }
   })
+});
+
+//redirects to landing page
+app.get("/", function(req, res){
+    res.render("matchland");
 });
 
 app.post('/', (req, res) => {
