@@ -92,17 +92,17 @@ app.post('/', (req, res) => {
 app.post('/match', (req, res) => {
   Traits.find({teamid: req.body.team_id}).exec()
   .then(function(traitsobj) {
-    var username = req.body.user_name,
-    match, current, difference, fullobj;
+    var username = req.body.user_name;
+    var match, match1, match2, current, difference, fullobj;
     var openarr = traitsobj[0].Openness,
     conscarr = traitsobj[0].Conscientiousness,
     extraarr = traitsobj[0].Extraversion,
     agreearr = traitsobj[0].Agreeableness,
     emotarr = traitsobj[0]['Emotional range'];
 
-    function isolate(arr) {
+    function isolate(arr, user) {
       for (var i = 0; i < arr.length; i++) {
-        if (arr[i]['username'] === username) {
+        if (arr[i]['username'] === user) {
           //this is current user's trait %
           var num = arr[i]['trait'];
           //this is rest of that trait's array after user removed
@@ -122,59 +122,110 @@ app.post('/match', (req, res) => {
           current = arr[i]['trait'];
         }
       }
-      console.log("current: " + current);
+      //console.log("current: " + current);
       return current;
     }
     
     //get obj of user with smallest diff
-    function fullobj(arr, current){
+    function fullobj(arr, current) {
       var returned = arr.filter(function(obj) {
           return obj.trait === current;
         });
       match = returned[0]['username'];
+      return match;
     }
     
     /* calling isolate/smallestDifference functs for each traits arr and
     creating var for each current user with smallest diff from each traits array 
-    in prep for determining overall smallest diff and associated user */
-    isolate(openarr);
+    in prep for determining overall smallest diff and assoc user */
+    isolate(openarr, username);
     var opendiff = difference;
     var user1 = current;
+    var openbest = fullobj(openarr, user1);
 
-    isolate(conscarr);
+    isolate(conscarr, username);
     var conscdiff = difference;
     var user2 = current;
+    var conscbest = fullobj(conscarr, user2);
 
-    isolate(extraarr);
+    isolate(extraarr, username);
     var extradiff = difference;
     var user3 = current;
+    var extrabest = fullobj(extraarr, user3);
 
-    isolate(agreearr);
+    isolate(agreearr, username);
     var agreediff = difference;
     var user4 = current;
+    var agreebest = fullobj(agreearr, user4);
 
-    isolate(emotarr);
+    isolate(emotarr, username);
     var emotdiff = difference;
     var user5 = current;
-    fullobj(emotarr, user5);
+    var emotbest = fullobj(emotarr, user5);
 
-    var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff);
-    
+    //get second best match
+    isolate(openarr, openbest);
+    var opendiff2 = difference;
+    var user1b = current;
+
+    isolate(conscarr, conscbest);
+    var conscdiff2 = difference;
+    var user2b = current;
+
+    isolate(extraarr, extrabest);
+    var extradiff2 = difference;
+    var user3b = current;
+
+    isolate(agreearr, agreebest);
+    var agreediff2 = difference;
+    var user4b = current;
+
+    isolate(emotarr, emotbest);
+    var emotdiff2 = difference;
+    var user5b = current;
+
+
+    var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
+    smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
+
     if (opendiff === smallestdiff) {
-      fullobj(openarr, user1);
+      match1 = openbest;
     } else if (conscdiff === smallestdiff) {
-      fullobj(conscarr, user2);
+      match1 = conscbest;
     } else if (extradiff === smallestdiff) {
-      fullobj(extraarr, user3);
+      match1 = extrabest;
     } else if (agreediff === smallestdiff) {
-      fullobj(agreearr, user4);
+      match1 = agreebest;
     } else if (emotdiff === smallestdiff) {
-      fullobj(emotarr, user5);
+      match1 = emotbest;
     }
+
+    if (opendiff2 === smallestdiff2) {
+      fullobj(openarr, user1b);
+      match2 = match;
+      console.log("open" + match2);
+    } else if (conscdiff2 === smallestdiff2) {
+      fullobj(conscarr, user2b);
+      match2 = match;
+      console.log("consc" + match2);
+    } else if (extradiff2 === smallestdiff2) {
+      fullobj(extraarr, user3b);
+      match2 = match;
+      console.log("extra" + match2);
+    } else if (agreediff2 === smallestdiff2) {
+      fullobj(agreearr, user4b);
+      match2 = match;
+      console.log("agree" + match2);
+    } else if (emotdiff2 === smallestdiff2) {
+      fullobj(emotarr, user5b);
+      match2 = match;
+      console.log("emot" + match2);
+    }
+
 
   res.json({
             "response_type": "in_channel",
-            "text": "Your best match is @" + match + "!"
+            "text": "Your best match is @" + match1 + "\nand your second best match is @" + match2 + "! \nGo say hello!"
           });
   });
 
