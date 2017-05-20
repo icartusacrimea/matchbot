@@ -123,6 +123,7 @@ app.post('/match', (req, res) => {
       difference = Math.abs (num - current);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
+        console.log("newdifference: " + newdifference);
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
