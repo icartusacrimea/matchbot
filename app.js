@@ -29,10 +29,11 @@ const server = app.listen(PORT);
 
 app.get('/auth', (req, res) => {
   var data = {form: {
-      client_id : process.env.analyzemeclientid,
-      client_secret : process.env.analyzemeclientsecret,
+      client_id : process.env.client_id,
+      client_secret : process.env.client_secret,
       code : req.query.code
   }}
+  console.log(data);
   request.post('https://slack.com/api/oauth.access', data, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = JSON.parse(body).access_token;
