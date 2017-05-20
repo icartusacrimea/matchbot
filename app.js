@@ -6,7 +6,6 @@ const team = require('./models/teams');
 const User = require('./models/user');
 const Traits = require('./models/traits');
 const mongoose = require('mongoose');
-// app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
 const URL = process.env.DATABASEURL || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
