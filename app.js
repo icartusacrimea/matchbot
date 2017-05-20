@@ -63,9 +63,9 @@ app.get("/", function(req, res){
 });
 
 app.post('/', (req, res) => {
-  if (!req.body.token) {
+  /*if (!req.body.token) {
    return res.send("Not authorized!");
-  }
+  }*/
   var channelid = req.body.channel_id;
   team.find({id : req.body.team_id}, function(error, foundteam) {
     // console.log(foundteam);
@@ -95,7 +95,7 @@ app.post('/', (req, res) => {
 app.post('/match', (req, res) => {
   Traits.find({teamid: req.body.team_id}).exec()
   .then(function(traitsobj) {
-    console.log(traitsobj);
+    //console.log(traitsobj);
     var username = req.body.user_name;
     var match, match1, match2, current, difference, fullobj;
     var openarr = traitsobj[0].Openness,
@@ -103,6 +103,10 @@ app.post('/match', (req, res) => {
     extraarr = traitsobj[0].Extraversion,
     agreearr = traitsobj[0].Agreeableness,
     emotarr = traitsobj[0]['Emotional range'];
+    console.log(openarr);
+    console.log(conscarr);
+    console.log(extraarr);
+    console.log(emotarr);
 
     function isolate(arr, user) {
       for (var i = 0; i < arr.length; i++) {
