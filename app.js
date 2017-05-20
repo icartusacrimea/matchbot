@@ -95,6 +95,7 @@ app.post('/', (req, res) => {
 app.post('/match', (req, res) => {
   Traits.find({teamid: req.body.team_id}).exec()
   .then(function(traitsobj) {
+    console.log(traitsobj);
     var username = req.body.user_name;
     var match, match1, match2, current, difference, fullobj;
     var openarr = traitsobj[0].Openness,
