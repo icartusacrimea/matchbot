@@ -4,14 +4,11 @@
   "description": "slack bot that analyzes user message history on command using ibm watson's personality insights",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "icartusacrimea, periman",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/icartusacrimea/matchbot/issues"
-  },
   "homepage": "https://github.com/icartusacrimea/matchbot#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
