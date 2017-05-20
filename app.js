@@ -132,7 +132,7 @@ app.post('/match', (req, res) => {
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
-          console.log("current2: " + current);
+          console.log("line 135 " + arr[i]['trait']);
         }
       }
       //console.log("current: " + current);
@@ -238,7 +238,6 @@ app.post('/match', (req, res) => {
       match2 = match;
       console.log("emot" + match2);
     }
-
 
   res.json({
             "response_type": "in_channel",
