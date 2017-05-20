@@ -1,5 +1,5 @@
 {
-  "name": "analyzemebot",
+  "name": "matchbot",
   "version": "1.0.0",
   "description": "slack bot that analyzes user message history on command using ibm watson's personality insights",
   "main": "app.js",

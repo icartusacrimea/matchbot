@@ -25,7 +25,8 @@ var personality_insights = new PersonalityInsightsV3({
   version_date: '2016-10-19'
 });
 
-const server = app.listen(80, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
+var PORT = process.env.PORT || 80;
+const server = app.listen(PORT, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
 
 app.get('/auth', (req, res) => {
   var data = {form: {
