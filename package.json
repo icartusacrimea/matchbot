@@ -2,7 +2,7 @@
   "name": "analyzemebot",
   "version": "1.0.0",
   "description": "slack bot that analyzes user message history on command using ibm watson's personality insights",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
