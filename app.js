@@ -8,7 +8,7 @@ const Traits = require('./models/traits');
 const mongoose = require('mongoose');
 // app.use(express.static(__dirname));
 mongoose.Promise = global.Promise;
-const URL = process.env.databaseurl || 'mongodb://localhost/analyzedb2';
+const URL = process.env.DATABASEURL || 'mongodb://localhost/analyzedb2';
 mongoose.connect(URL);
 
 app.use(bodyparser.json());
@@ -26,7 +26,7 @@ var personality_insights = new PersonalityInsightsV3({
 });
 
 var PORT = process.env.PORT || 80;
-const server = app.listen(PORT, () => {console.log('Express server listening on port %d in %s mode.', server.address().port, app.settings.env);});
+const server = app.listen(PORT);
 
 app.get('/auth', (req, res) => {
   var data = {form: {
