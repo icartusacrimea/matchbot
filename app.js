@@ -121,6 +121,7 @@ app.post('/match', (req, res) => {
       current = arr[0]['trait'];
       console.log("current1: " + current);
       difference = Math.abs (num - current);
+      console.log("arr: " + arr);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
         console.log("newdifference: " + newdifference);
