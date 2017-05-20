@@ -202,6 +202,9 @@ app.post('/match', (req, res) => {
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
     smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
 
+    console.log(opendiff, conscdiff, extradiff, agreediff, emotdiff);
+    console.log(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
+
     if (opendiff === smallestdiff) {
       match1 = openbest;
     } else if (conscdiff === smallestdiff) {
@@ -241,9 +244,6 @@ app.post('/match', (req, res) => {
             "response_type": "in_channel",
             "text": "Your best match is @" + match1 + "\nand your second best match is @" + match2 + "! \nGo say hello!"
           });
-  
-  }).catch(function(traitsobj) {
-    res.send('there is a prob');
   });
 
 });
