@@ -37,7 +37,6 @@ app.get('/auth', (req, res) => {
   request.post('https://slack.com/api/oauth.access', data, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = JSON.parse(body).access_token;
-        //console.log(token);
         request.post('https://slack.com/api/team.info', {form : {token : token}}, function(error, response, body) {
           console.log(JSON.parse(body));
           if (!error && response.statusCode == 200) {
