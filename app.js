@@ -63,9 +63,9 @@ app.get("/", function(req, res){
 });
 
 app.post('/', (req, res) => {
-  /*if (!req.body.token) {
+  if (!req.body.token) {
    return res.send("Not authorized!");
-  }*/
+  }
   var channelid = req.body.channel_id;
   team.find({id : req.body.team_id}, function(error, foundteam) {
     // console.log(foundteam);
@@ -241,6 +241,10 @@ app.post('/match', (req, res) => {
             "response_type": "in_channel",
             "text": "Your best match is @" + match1 + "\nand your second best match is @" + match2 + "! \nGo say hello!"
           });
+  });
+
+  .catch(function(traitsobj) {
+    res.send('there is a prob');
   });
 
 });
