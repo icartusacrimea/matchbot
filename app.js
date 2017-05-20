@@ -109,6 +109,7 @@ app.post('/match', (req, res) => {
         if (arr[i]['username'] === user) {
           //this is current user's trait %
           var num = arr[i]['trait'];
+          console.log("num: " + num);
           //this is rest of that trait's array after user removed
           arr.splice(i, 1);
           smallestDifference(num, arr);
@@ -118,12 +119,14 @@ app.post('/match', (req, res) => {
     
     function smallestDifference(num, arr) {
       current = arr[0]['trait'];
+      console.log("current1: " + current);
       difference = Math.abs (num - current);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
+          console.log("current2: " + current);
         }
       }
       //console.log("current: " + current);
@@ -133,6 +136,7 @@ app.post('/match', (req, res) => {
     //get obj of user with smallest diff
     function fullobj(arr, current) {
       var returned = arr.filter(function(obj) {
+        console.log("fullobj trait: " + obj.trait);
           return obj.trait === current;
         });
       match = returned[0]['username'];
