@@ -116,6 +116,7 @@ app.post('/match', (req, res) => {
           //console.log("num: " + num);
           //this is rest of that trait's array after user removed
           arr.splice(i, 1);
+          console.log(arr);
           smallestDifference(num, arr);
         }
       }
@@ -125,14 +126,14 @@ app.post('/match', (req, res) => {
       current = arr[0]['trait'];
       //console.log("current1: " + current);
       difference = Math.abs (num - current);
-      console.log("arr: " + arr);
+      //console.log("arr: " + arr);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
-        console.log("newdifference: " + newdifference + " difference: " + difference);
+        //console.log("newdifference: " + newdifference + " difference: " + difference);
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
-          console.log("line 135 " + arr[i]['trait']);
+          //console.log("line 135 " + arr[i]['trait']);
         }
       }
       //console.log("current: " + current);
