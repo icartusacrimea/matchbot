@@ -146,7 +146,6 @@ app.post('/match', (req, res) => {
           return obj.trait === current;
         });
       match = returned[0]['username'];
-      console.log("match: " + match);
       return match;
     }
     
@@ -199,12 +198,8 @@ app.post('/match', (req, res) => {
     var emotdiff2 = difference;
     var user5b = current;
 
-
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
     smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
-
-    console.log(opendiff, conscdiff, extradiff, agreediff, emotdiff);
-    console.log(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
 
     if (opendiff === smallestdiff) {
       match1 = openbest;
