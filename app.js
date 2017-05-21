@@ -143,6 +143,8 @@ app.post('/match', (req, res) => {
     
     var opendiff, opendiff2, conscdiff, conscdiff2, extradiff, extradiff2, agreediff, agreediff2, emotdiff, emotdiff2, user1, user1b, user2, user2b, user3, user3b, user4, user4b, user5, user5b, openbest, conscbest, extrabest, agreebest, emotbest, openbest2, conscbest2, extrabest2, agreebest2, emotbest2;
 
+    findMatchOne();
+
     /* calling isolate/smallestDifference functs for each traits arr and
     creating var for each current user with smallest diff from each traits array 
     in prep for determining overall smallest diff and assoc user */
@@ -201,8 +203,6 @@ app.post('/match', (req, res) => {
       user5b = current;
       emotbest2 = fullobj(emotarr, user5b);
     }
-
-    findMatchOne();
 
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff);
 
