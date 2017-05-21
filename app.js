@@ -103,19 +103,16 @@ app.post('/match', (req, res) => {
     extraarr = traitsobj[0].Extraversion,
     agreearr = traitsobj[0].Agreeableness,
     emotarr = traitsobj[0]['Emotional range'];
-    console.log(openarr);
-    console.log(conscarr);
-    console.log(extraarr);
-    console.log(emotarr);
 
     function isolate(arr, user) {
       for (var i = 0; i < arr.length; i++) {
         if (arr[i]['username'] === user) {
           //this is current user's trait %
           var num = arr[i]['trait'];
-          //console.log("num: " + num);
           //this is rest of that trait's array after user removed
+          console.log("BEFORE ISOLATING!!! " + arr);
           arr.splice(i, 1);
+          console.log("AFTER ISOLATING!!! " + arr);
           smallestDifference(num, arr);
         }
       }
