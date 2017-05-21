@@ -95,7 +95,7 @@ app.post('/', (req, res) => {
 app.post('/match', (req, res) => {
   Traits.find({teamid: req.body.team_id}).exec()
   .then(function(traitsobj) {
-    console.log("traits obj: " + traitsobj);
+    //console.log("traits obj: " + traitsobj);
     var username = req.body.user_name;
     var match, match1, match2, current, difference, fullobj;
     var openarr = traitsobj[0].Openness,
@@ -116,7 +116,6 @@ app.post('/match', (req, res) => {
           //console.log("num: " + num);
           //this is rest of that trait's array after user removed
           arr.splice(i, 1);
-          console.log(arr);
           smallestDifference(num, arr);
         }
       }
@@ -124,16 +123,12 @@ app.post('/match', (req, res) => {
     
     function smallestDifference(num, arr) {
       current = arr[0]['trait'];
-      //console.log("current1: " + current);
       difference = Math.abs (num - current);
-      //console.log("arr: " + arr);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
-        //console.log("newdifference: " + newdifference + " difference: " + difference);
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
-          //console.log("line 135 " + arr[i]['trait']);
         }
       }
       //console.log("current: " + current);
@@ -143,7 +138,6 @@ app.post('/match', (req, res) => {
     //get obj of user with smallest diff
     function fullobj(arr, current) {
       var returned = arr.filter(function(obj) {
-        //console.log("fullobj trait: " + obj.trait);
           return obj.trait === current;
         });
       match = returned[0]['username'];
@@ -204,14 +198,19 @@ app.post('/match', (req, res) => {
 
     if (opendiff === smallestdiff) {
       match1 = openbest;
+      console.log(match1);
     } else if (conscdiff === smallestdiff) {
       match1 = conscbest;
+      console.log(match1);
     } else if (extradiff === smallestdiff) {
       match1 = extrabest;
+      console.log(match1);
     } else if (agreediff === smallestdiff) {
       match1 = agreebest;
+      console.log(match1);
     } else if (emotdiff === smallestdiff) {
       match1 = emotbest;
+      console.log(match1);
     }
 
     if (opendiff2 === smallestdiff2) {
