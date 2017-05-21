@@ -201,11 +201,8 @@ app.post('/match', (req, res) => {
     }
 
     findMatchOne();
-    findMatchTwo();
-    console.log(openbest2, conscbest2, extabest2, agreebest2, emotbest2);
 
-    var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
-    smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
+    var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff);
 
     if (opendiff === smallestdiff) {
       match1 = openbest;
@@ -223,6 +220,11 @@ app.post('/match', (req, res) => {
       match1 = emotbest;
       console.log(match1);
     }
+
+    findMatchTwo();
+    console.log(openbest2, conscbest2, extabest2, agreebest2, emotbest2);
+
+    var smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
 
     if (opendiff2 === smallestdiff2) {
       //fullobj(openarr, user1b);
