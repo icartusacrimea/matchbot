@@ -146,62 +146,61 @@ app.post('/match', (req, res) => {
     /* calling isolate/smallestDifference functs for each traits arr and
     creating var for each current user with smallest diff from each traits array 
     in prep for determining overall smallest diff and assoc user */
-  function findMatchOne() { 
-    isolate(openarr, username);
-    opendiff = difference;
-    user1 = current;
-    openbest = fullobj(openarr, user1);
+    function findMatchOne() { 
+      isolate(openarr, username);
+      opendiff = difference;
+      user1 = current;
+      openbest = fullobj(openarr, user1);
 
-    isolate(conscarr, username);
-    conscdiff = difference;
-    user2 = current;
-    conscbest = fullobj(conscarr, user2);
+      isolate(conscarr, username);
+      conscdiff = difference;
+      user2 = current;
+      conscbest = fullobj(conscarr, user2);
 
-    isolate(extraarr, username);
-    extradiff = difference;
-    user3 = current;
-    extrabest = fullobj(extraarr, user3);
+      isolate(extraarr, username);
+      extradiff = difference;
+      user3 = current;
+      extrabest = fullobj(extraarr, user3);
 
-    isolate(agreearr, username);
-    agreediff = difference;
-    user4 = current;
-    agreebest = fullobj(agreearr, user4);
+      isolate(agreearr, username);
+      agreediff = difference;
+      user4 = current;
+      agreebest = fullobj(agreearr, user4);
 
-    isolate(emotarr, username);
-    emotdiff = difference;
-    user5 = current;
-    emotbest = fullobj(emotarr, user5);
-  }
-    //get second best match
-  function findMatchTwo() {
-    isolate(openarr, openbest);
-    opendiff2 = difference;
-    user1b = current;
-    openbest2 = fullobj(openarr, user1b);
+      isolate(emotarr, username);
+      emotdiff = difference;
+      user5 = current;
+      emotbest = fullobj(emotarr, user5);
+    }
+      //get second best match
+    function findMatchTwo() {
+      isolate(openarr, match1);
+      opendiff2 = difference;
+      user1b = current;
+      openbest2 = fullobj(openarr, user1b);
 
-    isolate(conscarr, conscbest);
-    conscdiff2 = difference;
-    user2b = current;
-    conscbest2 = fullobj(conscarr, user2b);
+      isolate(conscarr, match1);
+      conscdiff2 = difference;
+      user2b = current;
+      conscbest2 = fullobj(conscarr, user2b);
 
-    isolate(extraarr, extrabest);
-    extradiff2 = difference;
-    user3b = current;
-    extrabest2 = fullobj(extraarr, user3b);
+      isolate(extraarr, match1);
+      extradiff2 = difference;
+      user3b = current;
+      extrabest2 = fullobj(extraarr, user3b);
 
-    isolate(agreearr, agreebest);
-    agreediff2 = difference;
-    user4b = current;
-    agreebest2 = fullobj(agreearr, user4b);
+      isolate(agreearr, match1);
+      agreediff2 = difference;
+      user4b = current;
+      agreebest2 = fullobj(agreearr, user4b);
 
-    isolate(emotarr, emotbest);
-    emotdiff2 = difference;
-    user5b = current;
-    emotbest2 = fullobj(emotarr, user5b);
-  }
+      isolate(emotarr, match1);
+      emotdiff2 = difference;
+      user5b = current;
+      emotbest2 = fullobj(emotarr, user5b);
+    }
 
-  findMatchOne();
-  findMatchTwo();
+    findMatchOne();
 
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
     smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
@@ -222,6 +221,8 @@ app.post('/match', (req, res) => {
       match1 = emotbest;
       console.log(match1);
     }
+
+    findMatchTwo();
 
     if (opendiff2 === smallestdiff2) {
       //fullobj(openarr, user1b);
