@@ -110,9 +110,9 @@ app.post('/match', (req, res) => {
           //this is current user's trait %
           var num = arr[i]['trait'];
           //this is rest of that trait's array after user removed
-          console.log("BEFORE ISOLATING!!! " + arr);
+          console.log(arr);
           arr.splice(i, 1);
-          console.log("AFTER ISOLATING!!! " + arr);
+          console.log(arr);
           smallestDifference(num, arr);
         }
       }
