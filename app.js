@@ -146,7 +146,9 @@ app.post('/match', (req, res) => {
     /* calling isolate/smallestDifference functs for each traits arr and
     creating var for each current user with smallest diff from each traits array 
     in prep for determining overall smallest diff and assoc user */
-    function findMatchOne() { 
+    function findMatchOne() {
+      username = req.body.user_name;
+      console.log(username);
       isolate(openarr, username);
       opendiff = difference;
       user1 = current;
@@ -222,7 +224,7 @@ app.post('/match', (req, res) => {
     }
 
     findMatchTwo();
-    console.log(openbest2, conscbest2, extrabest2, agreebest2, emotbest2);
+    //console.log(openbest2, conscbest2, extrabest2, agreebest2, emotbest2);
 
     var smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
 
