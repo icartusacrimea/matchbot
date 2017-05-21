@@ -110,9 +110,9 @@ app.post('/match', (req, res) => {
           //this is current user's trait %
           var num = arr[i]['trait'];
           //this is rest of that trait's array after user removed
-          console.log(arr);
+          //console.log(arr);
           arr.splice(i, 1);
-          console.log(arr);
+          //console.log(arr);
           smallestDifference(num, arr);
         }
       }
@@ -201,6 +201,8 @@ app.post('/match', (req, res) => {
     }
 
     findMatchOne();
+    findMatchTwo();
+    console.log(openbest2, conscbest2, extabest2, agreebest2, emotbest2);
 
     var smallestdiff = Math.min(opendiff, conscdiff, extradiff, agreediff, emotdiff),
     smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
@@ -221,8 +223,6 @@ app.post('/match', (req, res) => {
       match1 = emotbest;
       console.log(match1);
     }
-
-    findMatchTwo();
 
     if (opendiff2 === smallestdiff2) {
       //fullobj(openarr, user1b);
