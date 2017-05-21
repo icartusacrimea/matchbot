@@ -222,7 +222,7 @@ app.post('/match', (req, res) => {
     }
 
     findMatchTwo();
-    console.log(openbest2, conscbest2, extabest2, agreebest2, emotbest2);
+    console.log(openbest2, conscbest2, extrabest2, agreebest2, emotbest2);
 
     var smallestdiff2 = Math.min(opendiff2, conscdiff2, extradiff2, agreediff2, emotdiff2);
 
