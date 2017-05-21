@@ -95,7 +95,7 @@ app.post('/', (req, res) => {
 app.post('/match', (req, res) => {
   Traits.find({teamid: req.body.team_id}).exec()
   .then(function(traitsobj) {
-    //console.log(traitsobj);
+    console.log("traits obj: " + traitsobj);
     var username = req.body.user_name;
     var match, match1, match2, current, difference, fullobj;
     var openarr = traitsobj[0].Openness,
@@ -113,7 +113,7 @@ app.post('/match', (req, res) => {
         if (arr[i]['username'] === user) {
           //this is current user's trait %
           var num = arr[i]['trait'];
-          console.log("num: " + num);
+          //console.log("num: " + num);
           //this is rest of that trait's array after user removed
           arr.splice(i, 1);
           smallestDifference(num, arr);
@@ -123,12 +123,12 @@ app.post('/match', (req, res) => {
     
     function smallestDifference(num, arr) {
       current = arr[0]['trait'];
-      console.log("current1: " + current);
+      //console.log("current1: " + current);
       difference = Math.abs (num - current);
       console.log("arr: " + arr);
       for (var i = 0; i < arr.length; i++) {
         var newdifference = Math.abs (num - arr[i]['trait']);
-        console.log("newdifference: " + newdifference);
+        console.log("newdifference: " + newdifference + " difference: " + difference);
         if (newdifference < difference) {
           difference = newdifference;
           current = arr[i]['trait'];
@@ -142,10 +142,11 @@ app.post('/match', (req, res) => {
     //get obj of user with smallest diff
     function fullobj(arr, current) {
       var returned = arr.filter(function(obj) {
-        console.log("fullobj trait: " + obj.trait);
+        //console.log("fullobj trait: " + obj.trait);
           return obj.trait === current;
         });
       match = returned[0]['username'];
+      console.log("match: " + match);
       return match;
     }
     
